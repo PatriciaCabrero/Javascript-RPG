@@ -39,6 +39,18 @@ battle.on('turn', function (data) {
     console.log('TURN', data);
 
     // TODO: render the characters
+    var heroes = document.querySelector('.character-list');
+
+    var heroesP = battle..allFrom('heroes');
+    for(var hero in heroesP){
+        console.log(heroesP);
+        heroes[0].innerHTML += `<li>BAT</li>`;/*`<li id="${hero.name}" class="${hero.party}">
+    ${hero.name}, HP: , <strong>${hero.hp}</strong>, /, ${hero.maxhp}€
+    </li>`;*/
+
+    }
+    var monsters = battle.prototype.characters.allFrom('monsters');
+
     // TODO: highlight current character
     // TODO: show battle actions form
 });
