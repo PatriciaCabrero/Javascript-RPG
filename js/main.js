@@ -39,18 +39,36 @@ battle.on('turn', function (data) {
     console.log('TURN', data);
 
     // TODO: render the characters
-    var heroes = document.querySelector('.character-list');
-
-    var heroesP = battle..allFrom('heroes');
-    for(var hero in heroesP){
-        console.log(heroesP);
-        heroes[0].innerHTML += `<li>BAT</li>`;/*`<li id="${hero.name}" class="${hero.party}">
-    ${hero.name}, HP: , <strong>${hero.hp}</strong>, /, ${hero.maxhp}€
-    </li>`;*/
+    var heroes = document.querySelector('#heroes');
+    var i=0;
+    while(heroes.childNodes[i].className !== 'character-list'){
+        i++;
 
     }
-    var monsters = battle.prototype.characters.allFrom('monsters');
+    heroes = heroes.childNodes[i];
+    var heroesP = battle.characters.allFrom('heroes');
+    for(var hero in heroesP){
+        heroes.innerHTML += `<li id="${heroesP[hero].name}" class="${heroesP[hero].party}"> ${heroesP[hero].name} (HP: <strong>${heroesP[hero].hp}</strong> / ${heroesP[hero].maxHp}
+        , MP: <strong>${heroesP[hero].mp}</strong> / ${heroesP[hero].maxMp})
+    </li>`;
 
+    }
+
+        // TODO: render the characters
+    var monsters = document.querySelector('#monsters');
+    i=0;
+    while(monsters.childNodes[i].className !== 'character-list'){
+        i++;
+
+    }
+    monsters = monsters.childNodes[i];
+    var monstersP = battle.characters.allFrom('monsters');
+    for(var monster in monstersP){
+        monsters.innerHTML += `<li id="${monstersP[monster].name}" class="${monstersP[monster].party}"> ${monstersP[monster].name} (HP: <strong>${monstersP[monster].hp}</strong> / ${monstersP[monster].maxHp}
+        , MP: <strong>${monstersP[monster].mp}</strong> / ${monstersP[monster].maxMp})
+    </li>`;
+
+    }
     // TODO: highlight current character
     // TODO: show battle actions form
 });
