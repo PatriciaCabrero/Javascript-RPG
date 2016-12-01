@@ -77,9 +77,15 @@ function buscarNodoHijos(nodo, nombre){
 function crearPersonajesLista(nodo, personajes){
     nodo.innerHTML = "";
     for(var personaje in personajes){
-        console.log (personaje);
-        nodo.innerHTML += `<li id="${personaje}" class="${personajes[personaje].party}"> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
+
+        if(personajes[personaje].hp<=0){
+        nodo.innerHTML += `<li id="${personaje}" class=dead> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
         , MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
+
+        }else{
+            nodo.innerHTML += `<li id="${personaje}" class="${personajes[personaje].party}"> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
+            , MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
+        }
     };
 };
 
@@ -96,7 +102,7 @@ battle.on('info', function (data) {
     var info = document.querySelector('#battle-info');
     var action;
     var efecto= '';
-    
+
     // TODO: display turn info in the #battle-info panel
     if(data.action === 'cast'){
         action = 'casted ' + data.scrollName + ' on';
@@ -117,9 +123,26 @@ battle.on('info', function (data) {
 
 battle.on('end', function (data) {
     console.log('END', data);
+    var info = document.querySelector('#battle-info');
 
     // TODO: re-render the parties so the death of the last character gets reflected
+        // TODO: render the characters
+    var heroes = document.querySelector('#heroes');
+    heroes = buscarNodoHijos(heroes, 'character-list');
+    var heroesP = battle.characters.allFrom('heroes');
+    crearPersonajesLista(heroes, heroesP);
+
+
+    // TODO: render the characters
+    var monsters = document.querySelector('#monsters');
+    monsters = buscarNodoHijos(monsters, 'character-list');
+    var monstersP = battle.characters.allFrom('monsters');
+    crearPersonajesLista(monsters, monstersP);
+
     // TODO: display 'end of battle' message, showing who won
+    info.innerHTML = `Battle is over! Winners were: <strong>${data.winner}</strong>` ;
+
+
 });
 
 window.onload = function () {
