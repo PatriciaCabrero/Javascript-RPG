@@ -57,7 +57,6 @@ battle.on('turn', function (data) {
     var highlight = document.getElementById(data.activeCharacterId);
     highlight.classList.add("active");
 
-
     // TODO: show battle actions form
     actionForm.style.display="block"; //Muestra el estilo del menu.
     var choicesN = actionForm.querySelector('.choices');
@@ -79,7 +78,7 @@ function crearPersonajesLista(nodo, personajes){
     for(var personaje in personajes){
 
         if(personajes[personaje].hp<=0){
-        nodo.innerHTML += `<li id="${personaje}" class=dead> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
+        nodo.innerHTML += `<li id="${personaje}" class=dead> ✝ ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
         , MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
 
         }else{
@@ -111,7 +110,8 @@ battle.on('info', function (data) {
         action = 'attacked on';
         efecto = '<strong>'+ data.targetId + '</strong> and caused '+ prettifyEffect(data.effect);
     }else if(data.action === 'defend'){
-        action = 'defended';
+        action = 'defended.';
+        efecto = 'Now his defense is ' + data.newDefense + '.';
     }
     if(data.success){
         info.innerHTML = `<strong> ${data.activeCharacterId}</strong> ${action} ${efecto}`;
