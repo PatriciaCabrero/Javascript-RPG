@@ -1,5 +1,5 @@
 var battle = new RPG.Battle();
-var actionForm, spellForm, targetForm;
+var actionForm, spellForm, targetForm, reload;
 var infoPanel;
 
 function prettifyEffect(obj) {
@@ -10,26 +10,64 @@ function prettifyEffect(obj) {
 }
 
 
-battle.setup({
+////RANDOM PARTY 
+
+battle.setup(getRandomSetup());
+function getRandomSetup() {
+  var heroMembers = getHeroeParty();
+  var monsterMembers = getMonsterParty();
+  return {
     heroes: {
-        members: [
-            RPG.entities.characters.heroTank,
-            RPG.entities.characters.heroWizard
-        ],
-        grimoire: [
-            RPG.entities.scrolls.health,
-            RPG.entities.scrolls.fireball
-        ]
+      members: heroMembers,
+      grimoire: [RPG.entities.scrolls.health, RPG.entities.scrolls.fireball]
     },
     monsters: {
-        members: [
-            RPG.entities.characters.monsterSlime,
-            RPG.entities.characters.monsterBat,
-            RPG.entities.characters.monsterSkeleton,
-            RPG.entities.characters.monsterBat
-        ]
+      members: monsterMembers
     }
-});
+  };
+}
+
+function getMonsterParty() {
+  var partySize = Math.floor(Math.random() * 1) + 1;
+  var members = [];
+  for (var i = 0; i < partySize; i++) {
+    members.push(getRandomMonster());
+  }
+  return members;
+}
+function getRandomMonster() {
+  var monsters = Object.keys(RPG.entities.characters).filter(isMonster);
+  var randomId = monsters[Math.floor(Math.random() * monsters.length)];
+  return RPG.entities.characters[randomId];
+
+  function isMonster(id) {
+    return id.substr(0, 'monster'.length) === 'monster';
+  }
+}
+function getHeroeParty() {
+  var partySize = Math.floor(Math.random() * 1) + 1;
+  var members = [];
+  for (var i = 0; i < partySize; i++) {
+    members.push(getRandomHeroe());
+  }
+  return members;
+}
+//Random heroe
+function getRandomHeroe() {
+  var heroes = Object.keys(RPG.entities.characters).filter(isHeroe);
+  var randomId = heroes[Math.floor(Math.random() * heroes.length)];
+  return RPG.entities.characters[randomId];
+
+//Busca en el id si tiene hero al principio del nombre si es asi es un heroe
+  function isHeroe(id) {
+    return id.substr(0, 'hero'.length) === 'hero';
+  }
+}
+
+////RANDOM PARTY FINAL/////////////////////
+
+
+
 
 battle.on('start', function (data) {
     console.log('START', data);
@@ -61,7 +99,7 @@ battle.on('turn', function (data) {
     actionForm.style.display="block"; //Muestra el estilo del menu.
     var choicesN = actionForm.querySelector('.choices');
     var options = battle.options.list();
-    createPanel(choicesN,options);
+    createPanel(choicesN,options, false);
 
 });
 
@@ -78,20 +116,28 @@ function crearPersonajesLista(nodo, personajes){
     for(var personaje in personajes){
 
         if(personajes[personaje].hp<=0){
-        nodo.innerHTML += `<li id="${personaje}" class=dead> ✝ ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
-        , MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
+        nodo.innerHTML += `<li id="${personaje}" class=dead> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / 
+        ${personajes[personaje].maxHp}, MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
 
         }else{
-            nodo.innerHTML += `<li id="${personaje}" class="${personajes[personaje].party}"> ${personaje} (HP: <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
+            nodo.innerHTML += `<li id="${personaje}" class="${personajes[personaje].party}"> ${personaje} (HP: 
+                <strong>${personajes[personaje].hp}</strong> / ${personajes[personaje].maxHp}
             , MP: <strong>${personajes[personaje].mp}</strong> / ${personajes[personaje].maxMp})</li>`;
         }
     };
 };
-
-function createPanel(nodo, opciones){
+//PanelTarget es true si es el panel target para pintar de diferentes colores
+function createPanel(nodo, opciones, panelTarget){
     nodo.innerHTML = "";
+    console.log(opciones);
+    var clase = 'none';
     for (var i = 0; i < opciones.length ; i++) {
-        nodo.innerHTML += `<li><label><input type = "radio" name="option" value = "${opciones[i]}" required> ${opciones[i]}</label></li>`;
+        if(panelTarget){ //si se trata de un panelTarget se cambia la clase y con ello el color
+            //Se filtra en el nombre para saber si es tank o wizz
+            if(opciones[i].substr(0, 'Tank'.length) === 'Tank' || opciones[i].substr(0, 'Wizz'.length) === 'Wizz')clase = 'heroe';
+            else clase = 'monster';
+        }
+        nodo.innerHTML += `<li class = "${clase}" ><label><input type = "radio" name="option" value = "${opciones[i]}" required> ${opciones[i]}</label></li>`;
     };
 };
 
@@ -123,7 +169,7 @@ battle.on('info', function (data) {
 
 battle.on('end', function (data) {
     console.log('END', data);
-    var info = document.querySelector('#battle-info');
+    var reload = document.querySelector('.battle-menu');
 
     // TODO: re-render the parties so the death of the last character gets reflected
         // TODO: render the characters
@@ -140,12 +186,24 @@ battle.on('end', function (data) {
     crearPersonajesLista(monsters, monstersP);
 
     // TODO: display 'end of battle' message, showing who won
-    info.innerHTML = `Battle is over! Winners were: <strong>${data.winner}</strong>` ;
+    infoPanel.innerHTML = `Battle is over! Winners were: <strong>${data.winner}</strong>` ;
 
+    //Creamos el boton
+    reload.innerHTML += `<button id= "reload" type = "submit">Play Again!</button>`;
+    
+    //Nodo para el listener del reload
+    reload = document.querySelector('#reload');
+
+    //Listener del boton de recarga de la pagina 
+    reload.addEventListener('click', function (evt){
+        evt.preventDefault();
+        window.location.reload();
+    });
 
 });
 
 window.onload = function () {
+
     actionForm = document.querySelector('form[name=select-action]');
     targetForm = document.querySelector('form[name=select-target]');
     spellForm = document.querySelector('form[name=select-spell]');
@@ -166,7 +224,7 @@ window.onload = function () {
         if(self.action === 'attack'){
             targetForm.style.display = "block";
             var nodo = targetForm.querySelector('.choices');
-            createPanel(nodo, battle.options.list());
+            createPanel(nodo, battle.options.list(), true);
         }else if(self.action === 'cast'){
             spellForm.style.display = "block";
             var aux = battle.options.list();
@@ -177,7 +235,7 @@ window.onload = function () {
                 boton.disabled = false;
             }
             var nodo = spellForm.querySelector('.choices');
-            createPanel(nodo, battle.options.list());
+            createPanel(nodo, battle.options.list(), false);
         }
     });
 
@@ -205,7 +263,7 @@ window.onload = function () {
         // TODO: go to select action menu
         actionForm.style.display = "block";
         var nodo = actionForm.querySelector('.choices');
-        createPanel(nodo, battle.options.list());
+        createPanel(nodo, battle.options.list(), false);
 
     });
 
@@ -224,7 +282,7 @@ window.onload = function () {
         targetForm.style.display = "block";
         var nodo = targetForm.querySelector('.choices');
 
-        createPanel(nodo, battle.options.list());
+        createPanel(nodo, battle.options.list(), false);
 
     });
 
@@ -240,9 +298,12 @@ window.onload = function () {
         // TODO: go to select action menu
         actionForm.style.display = "block";
         var nodo = actionForm.querySelector('.choices');
-        createPanel(nodo, battle.options.list());
+        createPanel(nodo, battle.options.list(), false);
 
     });
+
+
+    /*        <section><button id="reload" type= "submit" style = "display:none">Play again!</button></section>*/
 
     battle.start();
 };
