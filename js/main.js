@@ -13,6 +13,7 @@ function prettifyEffect(obj) {
 ////RANDOM PARTY 
 
 battle.setup(getRandomSetup());
+
 function getRandomSetup() {
   var heroMembers = getHeroeParty();
   var monsterMembers = getMonsterParty();
@@ -126,6 +127,7 @@ function crearPersonajesLista(nodo, personajes){
         }
     };
 };
+
 //PanelTarget es true si es el panel target para pintar de diferentes colores
 function createPanel(nodo, opciones, panelTarget){
     nodo.innerHTML = "";
@@ -272,7 +274,6 @@ window.onload = function () {
     spellForm.addEventListener('submit', function (evt) {
         evt.preventDefault();
 
-
         // TODO: select the spell chosen by the player
         var action= spellForm.elements['option'].value;
         battle.options.select(action);
@@ -303,9 +304,5 @@ window.onload = function () {
         createPanel(nodo, battle.options.list(), false);
 
     });
-
-
-    /*        <section><button id="reload" type= "submit" style = "display:none">Play again!</button></section>*/
-
     battle.start();
 };
