@@ -28,7 +28,7 @@ function getRandomSetup() {
 }
 
 function getMonsterParty() {
-  var partySize = Math.floor(Math.random() * 1) + 1;
+  var partySize = Math.floor(Math.random() * 3) + 1;
   var members = [];
   for (var i = 0; i < partySize; i++) {
     members.push(getRandomMonster());
@@ -45,7 +45,7 @@ function getRandomMonster() {
   }
 }
 function getHeroeParty() {
-  var partySize = Math.floor(Math.random() * 1) + 1;
+  var partySize = Math.floor(Math.random() * 3) + 1;
   var members = [];
   for (var i = 0; i < partySize; i++) {
     members.push(getRandomHeroe());
@@ -134,7 +134,9 @@ function createPanel(nodo, opciones, panelTarget){
     for (var i = 0; i < opciones.length ; i++) {
         if(panelTarget){ //si se trata de un panelTarget se cambia la clase y con ello el color
             //Se filtra en el nombre para saber si es tank o wizz
-            if(opciones[i].substr(0, 'Tank'.length) === 'Tank' || opciones[i].substr(0, 'Wizz'.length) === 'Wizz')clase = 'heroe';
+            if(opciones[i].substr(0, 'Tank'.length) === 'Tank' || opciones[i].substr(0, 'Wizz'.length) === 'Wizz'){
+                clase = 'heroe';
+            }
             else clase = 'monster';
         }
         nodo.innerHTML += `<li class = "${clase}" ><label><input type = "radio" name="option" value = "${opciones[i]}" required> ${opciones[i]}</label></li>`;
